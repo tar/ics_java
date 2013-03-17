@@ -24,7 +24,7 @@ public class Modificators {
 		int1=int2;
 	}
 	
-	void print(String str){
+	public void print(String str){
 		System.out.println(str);
 	}
 	

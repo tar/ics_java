@@ -3,7 +3,7 @@ package ru.spbstu.ics.java.lesson_20130304;
 public class ModificatorsChild  extends Modificators implements FirstInterface{
 	
 	@Override
-	void print(String str){
+	public void print(String str){
 		super.print("hello");
 		System.err.println(str + " bye");
 	}
