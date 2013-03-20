@@ -3,6 +3,7 @@ package ru.spbstu.ics.java.tasks.deque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -53,6 +54,35 @@ public class MyDeque<T> implements Deque<T> {
 	private int _size;
 	private Entry _head;
 	private Entry _tail;
+	
+	public MyDeque() {
+		_data = new LinkedList<Entry>();
+		_size = 0;
+		_head = null;
+		_tail = null;
+	}
+	
+	public MyDeque(Collection<? extends T> c) {
+		this();
+		addAll(c);
+	}
+	
+	private void removeExistingEntry(Entry e) {
+		if (_head == e) {
+			_head = e.get_next();
+		}
+		if (_tail == e) {
+			_tail = e.get_prev();
+		}
+		if (e.get_prev() != null) {
+			e.get_prev().set_next(e.get_next());
+		}
+		if (e.get_next() != null) {
+			e.get_next().set_prev(e.get_prev());
+		}
+		_data.remove(e);
+		_size--;
+	}
 	
 	@Override
 	public boolean isEmpty() {
@@ -113,7 +143,7 @@ public class MyDeque<T> implements Deque<T> {
 	public boolean addAll(Collection<? extends T> c) {
 		boolean result = false;
 		for (Iterator<?> iterator = c.iterator(); iterator.hasNext();) {
-			result |= this.add((T) iterator.next());
+			result |= add((T) iterator.next());
 		}
 		return result;
 	}
@@ -122,15 +152,25 @@ public class MyDeque<T> implements Deque<T> {
 	public boolean removeAll(Collection<?> c) {
 		boolean result = false;
 		for (Iterator<?> iterator = c.iterator(); iterator.hasNext();) {
-			result |= this.remove(iterator.next());
+			result |= remove(iterator.next());
 		}
 		return result;
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		Entry entry = _head;
+		Entry nextEntry;
+		boolean result = false;
+		while (entry != null) {
+			if (!c.contains(entry.get_data())) {
+				nextEntry = entry.get_next();
+				removeExistingEntry(entry);
+				result = true;
+				entry = nextEntry;
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -187,13 +227,7 @@ public class MyDeque<T> implements Deque<T> {
 			throw new NoSuchElementException("The deque is empty.");
 		}
 		T requestedData = _head.get_data();
-		_head = _head.get_next();
-		if (_head != null) {
-			_head.set_prev(null);
-		} else {
-			_tail = null;
-		}
-		_size--;
+		removeExistingEntry(_head);
 		return requestedData;
 	}
 
@@ -203,13 +237,7 @@ public class MyDeque<T> implements Deque<T> {
 			throw new NoSuchElementException("The deque is empty.");
 		}
 		T requestedData = _tail.get_data();
-		_tail = _tail.get_prev();
-		if (_tail != null) {
-			_tail.set_next(null);
-		} else {
-			_head = null;
-		}
-		_size--;
+		removeExistingEntry(_tail);
 		return requestedData;
 	}
 
@@ -218,7 +246,9 @@ public class MyDeque<T> implements Deque<T> {
 		if (_size == 0) {
 			return null;
 		}
-		return removeFirst();
+		T requestedData = _head.get_data();
+		removeExistingEntry(_head);
+		return requestedData;
 	}
 
 	@Override
@@ -226,7 +256,9 @@ public class MyDeque<T> implements Deque<T> {
 		if (_size == 0) {
 			return null;
 		}
-		return removeLast();
+		T requestedData = _tail.get_data();
+		removeExistingEntry(_tail);
+		return requestedData;
 	}
 
 	@Override
@@ -263,13 +295,41 @@ public class MyDeque<T> implements Deque<T> {
 
 	@Override
 	public boolean removeFirstOccurrence(Object o) {
-		// TODO Auto-generated method stub
+		Entry entry = _head;
+		while (entry != null) {
+			if (entry.get_data() != null) {
+				if (entry.get_data().equals(o)) {
+					removeExistingEntry(entry);
+					return true;
+				}
+			} else {
+				if (o == null) {
+					removeExistingEntry(entry);
+					return true;
+				}
+			}
+			entry = entry.get_next();
+		}
 		return false;
 	}
 
 	@Override
 	public boolean removeLastOccurrence(Object o) {
-		// TODO Auto-generated method stub
+		Entry entry = _tail;
+		while (entry != null) {
+			if (entry.get_data() != null) {
+				if (entry.get_data().equals(o)) {
+					removeExistingEntry(entry);
+					return true;
+				}
+			} else {
+				if (o == null) {
+					removeExistingEntry(entry);
+					return true;
+				}
+			}
+			entry = entry.get_prev();
+		}
 		return false;
 	}
 
@@ -322,7 +382,17 @@ public class MyDeque<T> implements Deque<T> {
 
 	@Override
 	public boolean contains(Object o) {
-		
+		for (Entry entry : _data) {
+			if (entry.get_data() != null) {
+				if (entry.get_data().equals(o)) {
+					return true;
+				}
+			} else {
+				if (o == null) {
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 
@@ -330,17 +400,79 @@ public class MyDeque<T> implements Deque<T> {
 	public int size() {
 		return _size;
 	}
+	
+	private class Itr implements Iterator<T> {
+		private Entry _entry;
+		private Entry _nextEntry;
+		
+		public Itr() {
+			_entry = null;
+			_nextEntry = _head;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return (_nextEntry != null);
+		}
 
+		@Override
+		public T next() {
+			if (_nextEntry == null) {
+				throw new NoSuchElementException("Next element doesn't exist.");
+			}
+			_entry = _nextEntry;
+			_nextEntry = _nextEntry.get_next();
+			return _entry.get_data();
+		}
+
+		@Override
+		public void remove() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+
+	private class DescendingItr implements Iterator<T> {
+		private Entry _entry;
+		private Entry _nextEntry;
+		
+		public DescendingItr() {
+			_entry = null;
+			_nextEntry = _tail;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return (_nextEntry != null);
+		}
+
+		@Override
+		public T next() {
+			if (_nextEntry == null) {
+				throw new NoSuchElementException("Next element doesn't exist.");
+			}
+			_entry = _nextEntry;
+			_nextEntry = _nextEntry.get_prev();
+			return _entry.get_data();
+		}
+
+		@Override
+		public void remove() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
 	@Override
 	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Itr();
 	}
 
 	@Override
 	public Iterator<T> descendingIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DescendingItr();
 	}
 
 }
