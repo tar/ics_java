@@ -75,6 +75,13 @@ public class TestMyDeque {
 			System.out.println(nMyDeque.peekFirst());
 			System.out.print("Peek last:");
 			System.out.println(nMyDeque.peekLast());
+			try {
+				nMyDeque.removeFirst();
+			} catch (EmptyCollectionException e) {
+				System.out.println("EmptyCollectionException caught.");
+				System.out.println(e.getMessage());
+				//e.printStackTrace();
+			}
 			
 			iMyDeque.add(2);
 			iMyDeque.add(-6);
@@ -112,6 +119,13 @@ public class TestMyDeque {
 			System.out.println(iMyDeque.toString());
 			iMyDeque.remove(100);
 			System.out.print("Remove 100: ");
+			System.out.println(iMyDeque.toString());
+			List<Integer> iList = new ArrayList<Integer>(3);
+			iList.add(1);
+			iList.add(2);
+			iList.add(3);
+			iMyDeque.retainAll(iList);
+			System.out.print("Retain 1 2 3: ");
 			System.out.println(iMyDeque.toString());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());

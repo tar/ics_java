@@ -7,6 +7,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * 
+ * The implementation of the Deque interface based on a LinkedList.
+ * 
+ * @author Oleg Rekin
+ *
+ * @param <T> the type of elements in the Deque.
+ */
 public class MyDeque<T> implements Deque<T> {
 
 	private class Entry {
@@ -54,19 +62,32 @@ public class MyDeque<T> implements Deque<T> {
 	private int _size;
 	private Entry _head;
 	private Entry _tail;
-
+	
+	/**
+	 * Constructs an empty deque.
+	 */
 	public MyDeque() {
 		_data = new LinkedList<Entry>();
 		_size = 0;
 		_head = null;
 		_tail = null;
 	}
-
+	
+	/**
+	 * Constructs an deque contains elements of the specified collection.
+	 * 
+	 * @param c the collection of elements to be added to the deque.
+	 */
 	public MyDeque(Collection<? extends T> c) {
 		this();
 		addAll(c);
 	}
-
+	
+	/**
+	 * Removes the entry without any checks.
+	 * 
+	 * @param e the entry to be removed.
+	 */
 	private void removeExistingEntry(Entry e) {
 		if (_head == e) {
 			_head = e.get_next();
@@ -103,7 +124,7 @@ public class MyDeque<T> implements Deque<T> {
 		}
 		return array;
 	}
-
+	
 	@Override
 	public <T> T[] toArray(T[] a) {   
 		// \/ Copied from LinkedList
@@ -126,12 +147,15 @@ public class MyDeque<T> implements Deque<T> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
+		//Empty collection is supposed to be contained by any collection.
 		if (c.size() == 0) {
 			return true;
 		}
+		//Empty collection cannot contain any non-empty collection.
 		if (_size == 0) {
 			return false;
 		}
+		//Check elements of c if they are contained by the deque.
 		for (Iterator<?> iterator = c.iterator(); iterator.hasNext();) {
 			if (!contains((Object) iterator.next())) {
 				return false;
@@ -165,10 +189,14 @@ public class MyDeque<T> implements Deque<T> {
 		boolean result = false;
 		while (entry != null) {
 			if (!c.contains(entry.get_data())) {
+				//delete current entry
 				nextEntry = entry.get_next();
 				removeExistingEntry(entry);
 				result = true;
 				entry = nextEntry;
+			} else {
+				//c contains current entry, skip
+				entry = entry.get_next();
 			}
 		}
 		return result;
@@ -199,6 +227,7 @@ public class MyDeque<T> implements Deque<T> {
 			_head.set_prev(entry);
 			_head = entry;
 		} else {
+			//_size == 0
 			_head = entry;
 			_tail = entry;
 		}
@@ -214,6 +243,7 @@ public class MyDeque<T> implements Deque<T> {
 			_tail.set_next(entry);
 			_tail = entry;
 		} else {
+			//_size == 0
 			_head = entry;
 			_tail = entry;
 		}
@@ -236,7 +266,7 @@ public class MyDeque<T> implements Deque<T> {
 	@Override
 	public T removeFirst() {
 		if (_size == 0) {
-			throw new NoSuchElementException("The deque is empty.");
+			throw new EmptyCollectionException("The deque is empty.");
 		}
 		T requestedData = _head.get_data();
 		removeExistingEntry(_head);
@@ -246,7 +276,7 @@ public class MyDeque<T> implements Deque<T> {
 	@Override
 	public T removeLast() {
 		if (_size == 0) {
-			throw new NoSuchElementException("The deque is empty.");
+			throw new EmptyCollectionException("The deque is empty.");
 		}
 		T requestedData = _tail.get_data();
 		removeExistingEntry(_tail);
@@ -276,7 +306,7 @@ public class MyDeque<T> implements Deque<T> {
 	@Override
 	public T getFirst() {
 		if (_size == 0) {
-			throw new NoSuchElementException("The deque is empty.");
+			throw new EmptyCollectionException("The deque is empty.");
 		}
 		return _head.get_data();
 	}
@@ -284,7 +314,7 @@ public class MyDeque<T> implements Deque<T> {
 	@Override
 	public T getLast() {
 		if (_size == 0) {
-			throw new NoSuchElementException("The deque is empty.");
+			throw new EmptyCollectionException("The deque is empty.");
 		}
 		return _tail.get_data();
 	}
@@ -315,6 +345,7 @@ public class MyDeque<T> implements Deque<T> {
 					return true;
 				}
 			} else {
+				//entry.get_data() is null
 				if (o == null) {
 					removeExistingEntry(entry);
 					return true;
@@ -335,6 +366,7 @@ public class MyDeque<T> implements Deque<T> {
 					return true;
 				}
 			} else {
+				//entry.get_data() is null
 				if (o == null) {
 					removeExistingEntry(entry);
 					return true;
@@ -400,6 +432,7 @@ public class MyDeque<T> implements Deque<T> {
 					return true;
 				}
 			} else {
+				//entry is null
 				if (o == null) {
 					return true;
 				}
@@ -412,18 +445,40 @@ public class MyDeque<T> implements Deque<T> {
 	public int size() {
 		return _size;
 	}
-
-	private enum IteratorStartPosition {
+	
+	/**
+	 * The <code>IteratorInitialPosition</code> enumeration is used 
+	 * to determine the initial position of an iterator 
+	 * (<tt>head</tt> or <tt>tail</tt>).
+	 * 
+	 * @see Itr
+	 */
+	private enum IteratorInitialPosition {
 		head, tail;
 	}
-
+	
+	/**
+	 * The <code>Itr</code> is an bidirectional iterator with 
+	 * customizable initial position
+	 * 
+	 * @see IteratorInitialPosition
+	 */
 	private class Itr implements Iterator<T> {
 		private Entry _previousEntry;
 		private Entry _lastReturnedEntry;
 		private Entry _nextEntry;
 		
-		public Itr(IteratorStartPosition itSP) {
-			switch (itSP) {
+		/**
+		 * Constructs an iterator with specified initial position 
+		 * 
+		 * @param itIP the desired initial position
+		 * @throws IllegalArgumentException on unexpected 
+		 * initial position argument.
+		 * 
+		 * @see IteratorInitialPosition
+		 */
+		public Itr(IteratorInitialPosition itIP) {
+			switch (itIP) {
 			case head:
 				_previousEntry = null;
 				_lastReturnedEntry = null;
@@ -436,19 +491,30 @@ public class MyDeque<T> implements Deque<T> {
 				break;
 			default:
 				throw new IllegalArgumentException(
-						"Unexpected start position argument.");
+						"Unexpected initial position argument.");
 			}
 		}
 		
+		/**
+		 * Constructs an iterator, which returns the first element of 
+		 * the deque on the first call to the <code>next()</code> method.
+		 */
 		public Itr() {
-			this(IteratorStartPosition.head);
+			this(IteratorInitialPosition.head);
 		}
 
 		@Override
 		public boolean hasNext() {
 			return (_nextEntry != null);
 		}
-
+		
+		/**
+		 * Returns true if there is at least one element before the current 
+		 * (and <code>previous()</code> will return an element rather than 
+		 * throwing an exception.
+		 * 
+		 * @return true if there is at least one element before the current.
+		 */
 		public boolean hasPrevious() {
 			return (_previousEntry != null);
 		}
@@ -463,7 +529,12 @@ public class MyDeque<T> implements Deque<T> {
 			_nextEntry = _nextEntry.get_next();
 			return _lastReturnedEntry.get_data();
 		}
-
+		
+		/**
+		 * Returns the previous element in the iteration.
+		 * 
+		 * @return the previous element in the iteration.
+		 */
 		public T previous() {
 			if (_previousEntry == null) {
 				throw new NoSuchElementException(
@@ -478,7 +549,8 @@ public class MyDeque<T> implements Deque<T> {
 		@Override
 		public void remove() {
 			if (_lastReturnedEntry == null) {
-				throw new NoSuchElementException("An element doesn't exist.");
+				throw new NoSuchElementException(
+						"The element under the iterator doesn't exist.");
 			}
 			removeExistingEntry(_lastReturnedEntry);
 			if (_nextEntry == null) {
@@ -493,14 +565,27 @@ public class MyDeque<T> implements Deque<T> {
 		}
 	}
 
+	/**
+	 * The <code>DescendingItr</code> is an bidirectional reverse iterator 
+	 * that is based on the <code>Itr</code> iterator
+	 * 
+	 * @see Itr
+	 */
 	private class DescendingItr implements Iterator<T> {
-		private final Itr _itr = new Itr(IteratorStartPosition.tail);
+		private final Itr _itr = new Itr(IteratorInitialPosition.tail);
 		
 		@Override
 		public boolean hasNext() {
 			return _itr.hasPrevious();
 		}
 
+		/**
+		 * Returns true if there is at least one element before the current 
+		 * (and <code>previous()</code> will return an element rather than 
+		 * throwing an exception.
+		 * 
+		 * @return true if there is at least one element before the current.
+		 */
 		public boolean hasPrevious() {
 			return _itr.hasNext();
 		}
@@ -510,6 +595,11 @@ public class MyDeque<T> implements Deque<T> {
 			return _itr.previous();
 		}
 
+		/**
+		 * Returns the previous element in the iteration.
+		 * 
+		 * @return the previous element in the iteration.
+		 */
 		public T previous() {
 			return _itr.next();
 		}
@@ -530,6 +620,7 @@ public class MyDeque<T> implements Deque<T> {
 		return new DescendingItr();
 	}
 	
+	//Object methods
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("");
