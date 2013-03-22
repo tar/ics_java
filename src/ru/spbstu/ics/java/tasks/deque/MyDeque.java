@@ -13,60 +13,60 @@ public class MyDeque<T> implements Deque<T> {
 		private T _data;
 		private Entry _next;
 		private Entry _prev;
-		
+
 		public Entry() {
 			_data = null;
 			_next = null;
 			_prev = null;
 		}
-		
+
 		public Entry(T _data) {
 			this();
 			this._data = _data;
 		}
-		
+
 		public T get_data() {
 			return _data;
 		}
-		
+
 		public void set_data(T _data) {
 			this._data = _data;
 		}
-		
+
 		public Entry get_next() {
 			return _next;
 		}
-		
+
 		public void set_next(Entry _next) {
 			this._next = _next;
 		}
-		
+
 		public Entry get_prev() {
 			return _prev;
 		}
-		
+
 		public void set_prev(Entry _prev) {
 			this._prev = _prev;
 		}
 	}
-	
+
 	private List<Entry> _data;
 	private int _size;
 	private Entry _head;
 	private Entry _tail;
-	
+
 	public MyDeque() {
 		_data = new LinkedList<Entry>();
 		_size = 0;
 		_head = null;
 		_tail = null;
 	}
-	
+
 	public MyDeque(Collection<? extends T> c) {
 		this();
 		addAll(c);
 	}
-	
+
 	private void removeExistingEntry(Entry e) {
 		if (_head == e) {
 			_head = e.get_next();
@@ -83,7 +83,7 @@ public class MyDeque<T> implements Deque<T> {
 		_data.remove(e);
 		_size--;
 	}
-	
+
 	@Override
 	public boolean isEmpty() {
 		return (_size == 0);
@@ -108,7 +108,7 @@ public class MyDeque<T> implements Deque<T> {
 		if (a.length < _size) {
 			array = new Object[_size];
 		} else {
-			array = (Object[])a;
+			array = (Object[]) a;
 		}
 		int index = 0;
 		Entry entry = _head;
@@ -120,7 +120,7 @@ public class MyDeque<T> implements Deque<T> {
 		for (int i = index; i < array.length; i++) {
 			array[i] = null;
 		}
-		return (T[])array;
+		return (T[]) array;
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class MyDeque<T> implements Deque<T> {
 			return true;
 		}
 		if (_size == 0) {
-			return false; 
+			return false;
 		}
 		for (Iterator<?> iterator = c.iterator(); iterator.hasNext();) {
 			if (!contains((Object) iterator.next())) {
@@ -400,19 +400,45 @@ public class MyDeque<T> implements Deque<T> {
 	public int size() {
 		return _size;
 	}
-	
+
+	private enum IteratorStartPosition {
+		head, tail;
+	}
+
 	private class Itr implements Iterator<T> {
-		private Entry _entry;
+		private Entry _previousEntry;
+		private Entry _lastReturnedEntry;
 		private Entry _nextEntry;
 		
-		public Itr() {
-			_entry = null;
-			_nextEntry = _head;
+		public Itr(IteratorStartPosition itSP) {
+			switch (itSP) {
+			case head:
+				_previousEntry = null;
+				_lastReturnedEntry = null;
+				_nextEntry = _head;
+				break;
+			case tail:
+				_previousEntry = _tail;
+				_lastReturnedEntry = null;
+				_nextEntry = null;
+				break;
+			default:
+				throw new IllegalArgumentException(
+						"Unexpected start position argument.");
+			}
 		}
 		
+		public Itr() {
+			this(IteratorStartPosition.head);
+		}
+
 		@Override
 		public boolean hasNext() {
 			return (_nextEntry != null);
+		}
+
+		public boolean hasPrevious() {
+			return (_previousEntry != null);
 		}
 
 		@Override
@@ -420,51 +446,68 @@ public class MyDeque<T> implements Deque<T> {
 			if (_nextEntry == null) {
 				throw new NoSuchElementException("Next element doesn't exist.");
 			}
-			_entry = _nextEntry;
+			_previousEntry = _lastReturnedEntry;
+			_lastReturnedEntry = _nextEntry;
 			_nextEntry = _nextEntry.get_next();
-			return _entry.get_data();
+			return _lastReturnedEntry.get_data();
+		}
+
+		public T previous() {
+			if (_previousEntry == null) {
+				throw new NoSuchElementException(
+						"Previous element doesn't exist.");
+			}
+			_nextEntry = _lastReturnedEntry;
+			_lastReturnedEntry = _previousEntry;
+			_previousEntry = _previousEntry.get_prev();
+			return _lastReturnedEntry.get_data();
 		}
 
 		@Override
 		public void remove() {
-			// TODO Auto-generated method stub
-			
+			if (_lastReturnedEntry == null) {
+				throw new NoSuchElementException("An element doesn't exist.");
+			}
+			removeExistingEntry(_lastReturnedEntry);
+			if (_nextEntry == null) {
+				_previousEntry = null;
+				_lastReturnedEntry = null;
+				_nextEntry = _head;
+			} else {
+				_previousEntry = _nextEntry.get_prev();
+				_lastReturnedEntry = _nextEntry;
+				_nextEntry = _nextEntry.get_next();
+			}
 		}
-		
 	}
 
 	private class DescendingItr implements Iterator<T> {
-		private Entry _entry;
-		private Entry _nextEntry;
-		
-		public DescendingItr() {
-			_entry = null;
-			_nextEntry = _tail;
-		}
+		private final Itr _itr = new Itr(IteratorStartPosition.tail);
 		
 		@Override
 		public boolean hasNext() {
-			return (_nextEntry != null);
+			return _itr.hasPrevious();
+		}
+
+		public boolean hasPrevious() {
+			return _itr.hasNext();
 		}
 
 		@Override
 		public T next() {
-			if (_nextEntry == null) {
-				throw new NoSuchElementException("Next element doesn't exist.");
-			}
-			_entry = _nextEntry;
-			_nextEntry = _nextEntry.get_prev();
-			return _entry.get_data();
+			return _itr.previous();
+		}
+
+		public T previous() {
+			return _itr.next();
 		}
 
 		@Override
 		public void remove() {
-			// TODO Auto-generated method stub
-			
+			_itr.remove();
 		}
-		
 	}
-	
+
 	@Override
 	public Iterator<T> iterator() {
 		return new Itr();
