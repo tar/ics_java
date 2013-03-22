@@ -80,6 +80,9 @@ public class MyDeque<T> implements Deque<T> {
 		if (e.get_next() != null) {
 			e.get_next().set_prev(e.get_prev());
 		}
+		e.set_prev(null);
+		e.set_data(null);
+		e.set_next(null);
 		_data.remove(e);
 		_size--;
 	}
@@ -95,32 +98,30 @@ public class MyDeque<T> implements Deque<T> {
 		int index = 0;
 		Entry entry = _head;
 		while (entry != null) {
-			array[index] = entry.get_data();
+			array[index++] = entry.get_data();
 			entry = entry.get_next();
-			index++;
 		}
 		return array;
 	}
 
 	@Override
-	public <T> T[] toArray(T[] a) {
-		Object[] array;
-		if (a.length < _size) {
-			array = new Object[_size];
-		} else {
-			array = (Object[]) a;
-		}
+	public <T> T[] toArray(T[] a) {   
+		// \/ Copied from LinkedList
+		if (a.length < _size)
+        a = (T[])java.lang.reflect.Array.newInstance(
+                a.getClass().getComponentType(), _size);
+		Object[] array = a;
+		// /\ Copied from LinkedList
 		int index = 0;
 		Entry entry = _head;
 		while (entry != null) {
-			array[index] = entry.get_data();
+			array[index++] = entry.get_data();
 			entry = entry.get_next();
-			index++;
 		}
 		for (int i = index; i < array.length; i++) {
 			array[i] = null;
 		}
-		return (T[]) array;
+		return a;
 	}
 
 	@Override
@@ -175,6 +176,17 @@ public class MyDeque<T> implements Deque<T> {
 
 	@Override
 	public void clear() {
+		Entry entry = _head;
+		Entry nextEntry;
+		while (entry != null) {
+			nextEntry = entry.get_next();
+			entry.set_prev(null);
+			entry.set_data(null);
+			entry.set_next(null);
+			entry = nextEntry;
+		}
+		_head = null;
+		_tail = null;
 		_data.clear();
 		_size = 0;
 	}
@@ -517,5 +529,17 @@ public class MyDeque<T> implements Deque<T> {
 	public Iterator<T> descendingIterator() {
 		return new DescendingItr();
 	}
-
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("");
+		Entry entry = _head;
+		while (entry != null) {
+			sb.append(entry.get_data().toString());
+			sb.append(' ');
+			entry = entry.get_next();
+		}
+		return sb.toString();
+	}
+	
 }
