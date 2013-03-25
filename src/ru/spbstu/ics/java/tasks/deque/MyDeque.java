@@ -58,7 +58,6 @@ public class MyDeque<T> implements Deque<T> {
 		}
 	}
 
-	private List<Entry> _data;
 	private int _size;
 	private Entry _head;
 	private Entry _tail;
@@ -67,7 +66,6 @@ public class MyDeque<T> implements Deque<T> {
 	 * Constructs an empty deque.
 	 */
 	public MyDeque() {
-		_data = new LinkedList<Entry>();
 		_size = 0;
 		_head = null;
 		_tail = null;
@@ -104,7 +102,6 @@ public class MyDeque<T> implements Deque<T> {
 		e.set_prev(null);
 		e.set_data(null);
 		e.set_next(null);
-		_data.remove(e);
 		_size--;
 	}
 
@@ -215,7 +212,6 @@ public class MyDeque<T> implements Deque<T> {
 		}
 		_head = null;
 		_tail = null;
-		_data.clear();
 		_size = 0;
 	}
 
@@ -231,7 +227,6 @@ public class MyDeque<T> implements Deque<T> {
 			_head = entry;
 			_tail = entry;
 		}
-		_data.add(entry);
 		_size++;
 	}
 
@@ -247,7 +242,6 @@ public class MyDeque<T> implements Deque<T> {
 			_head = entry;
 			_tail = entry;
 		}
-		_data.add(entry);
 		_size++;
 	}
 
@@ -426,7 +420,8 @@ public class MyDeque<T> implements Deque<T> {
 
 	@Override
 	public boolean contains(Object o) {
-		for (Entry entry : _data) {
+		Entry entry = _head;
+		while (entry != null) {
 			if (entry.get_data() != null) {
 				if (entry.get_data().equals(o)) {
 					return true;
@@ -437,6 +432,7 @@ public class MyDeque<T> implements Deque<T> {
 					return true;
 				}
 			}
+			entry = entry.get_next();
 		}
 		return false;
 	}
