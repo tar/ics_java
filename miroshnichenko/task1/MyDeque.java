@@ -16,10 +16,11 @@ public class MyDeque<T> implements Deque<T> {
 
     private Entry head; // начало очереди
     private Entry tail; // конец очереди
-    private int size; // текущий размер очереди
+    private int size = 0; // текущий размер очереди
 
     @Override
     public void addFirst(T e) {
+        checkNotNull(e);
         ++size;
         Entry newEntry = new Entry(e);
         if (isEmpty()) {
@@ -34,6 +35,7 @@ public class MyDeque<T> implements Deque<T> {
 
     @Override
     public void addLast(T e) {
+        checkNotNull(e);
         ++size;
         Entry newEntry = new Entry(e);
         if (isEmpty()) {
@@ -142,7 +144,8 @@ public class MyDeque<T> implements Deque<T> {
 
     @Override
     public boolean removeFirstOccurrence(Object o) {
-        if (o == null || isEmpty()) {
+        checkNotNull(o);
+        if (isEmpty()) {
             return false;
         }
 
@@ -170,7 +173,8 @@ public class MyDeque<T> implements Deque<T> {
 
     @Override
     public boolean removeLastOccurrence(Object o) {
-        if (o == null || isEmpty()) {
+        checkNotNull(o);
+        if (isEmpty()) {
             return false;
         }
         Entry current = tail;
@@ -243,6 +247,7 @@ public class MyDeque<T> implements Deque<T> {
 
     @Override
     public boolean contains(Object o) {
+        checkNotNull(o);
         if (isEmpty()) {
             return false;
         }
@@ -264,12 +269,12 @@ public class MyDeque<T> implements Deque<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new MyDequeueIterator(head);
+        return new MyDequeIterator();
     }
 
     @Override
     public Iterator<T> descendingIterator() {
-        return new MyDequeueDescIterator(tail);
+        return new MyDequeDescIterator();
     }
 
     @Override
@@ -301,6 +306,7 @@ public class MyDeque<T> implements Deque<T> {
 
     @Override
     public boolean containsAll(Collection<?> clctn) {
+        checkNotNull(clctn);
         // по-хорошему надо бы типы проверить
         Iterator<?> i = clctn.iterator();
         while (i.hasNext()) {
@@ -313,6 +319,7 @@ public class MyDeque<T> implements Deque<T> {
 
     @Override
     public boolean addAll(Collection<? extends T> clctn) {
+        checkNotNull(clctn);
         // по-хорошему надо бы типы проверить
         Iterator<?> i = clctn.iterator();
         boolean res = false;
@@ -324,6 +331,7 @@ public class MyDeque<T> implements Deque<T> {
 
     @Override
     public boolean removeAll(Collection<?> clctn) {
+        checkNotNull(clctn);
         // по-хорошему надо бы типы проверить
         Iterator<?> i = clctn.iterator();
         boolean res = false;
@@ -335,6 +343,7 @@ public class MyDeque<T> implements Deque<T> {
 
     @Override
     public boolean retainAll(Collection<?> clctn) {
+        checkNotNull(clctn);
         //пока пусть будет unsupported
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -344,6 +353,10 @@ public class MyDeque<T> implements Deque<T> {
         head = null;
         tail = null;
         size = 0;
+    }
+    private void checkNotNull(Object elem) {
+        if (elem == null)
+            throw new NullPointerException();
     }
 
     private class Entry {
@@ -359,13 +372,11 @@ public class MyDeque<T> implements Deque<T> {
         }
     }
 
-    private class MyDequeueIterator implements Iterator<T> {
+    private class MyDequeIterator implements Iterator<T> {
 
-        Entry head;
         Entry current;
 
-        public MyDequeueIterator(Entry head) {
-            this.head = head;
+        public MyDequeIterator() {
             current = head;
         }
 
@@ -386,18 +397,15 @@ public class MyDeque<T> implements Deque<T> {
 
         @Override
         public void remove() {
-            // пока оставлю неподдерживаемой
+            // пока оставлю неподдерживаемой, этот мето опциональный, так что все ок
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
 
-    private class MyDequeueDescIterator implements Iterator<T> {
-
-        Entry tail;
+    private class MyDequeDescIterator implements Iterator<T> {
         Entry current;
 
-        public MyDequeueDescIterator(Entry tail) {
-            this.tail = tail;
+        public MyDequeDescIterator() {
             current = tail;
         }
 

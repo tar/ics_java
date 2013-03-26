@@ -1,6 +1,5 @@
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 
@@ -10,12 +9,14 @@ public class MyDequeTest {
         System.out.println("Создаем новый дек");
         Deque<String> dek = new MyDeque<>();
         System.out.println("Дек пуст? -" +dek.isEmpty());
+        System.out.println(dek.size());
         System.out.println("Вставляем 5 элементов");
         dek.add("first");
         dek.add("second");
         dek.add("third");
         dek.add("fourth");
         dek.add("fifth");
+        System.out.println(dek.size());
         System.out.println("Дек пуст? -" +dek.isEmpty());
         System.out.println("Содержимое дека (просмотр с удалением):");
         displayDeque(dek);
@@ -27,7 +28,8 @@ public class MyDequeTest {
         displayInvertedDeque(dek);
         System.out.println("Содержит ли дек \"third\"? -" + dek.contains("third"));
         System.out.println("A \"100500\"? -" + dek.contains("100500"));
-
+        System.out.println("Пробум добавить null");
+        dek.add(null);
 
     }
 
