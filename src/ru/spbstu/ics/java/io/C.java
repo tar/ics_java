@@ -11,6 +11,13 @@ public class C implements Externalizable {
 	int _kitty;
 	String _cat;
 	
+	
+	Integer _day = 3;
+	Integer _month = 4;
+	Integer _year = 2013;
+	
+	
+	
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeInt(_kitty);

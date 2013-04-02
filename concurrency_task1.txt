@@ -1,0 +1,9 @@
+I, Multiply matrices in threads
+	-Without threads
+	-With threads
+II. Five philosophers
+	1) Deadlock
+	2) Order
+	3) Non greedy
+	
+	1*) Check if die

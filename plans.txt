@@ -4,9 +4,9 @@ Java cources plans:
 2) Git+
 3) Collections+
 4) Exception (Error, Runtime exception)+
-5) Input/Output (java.io, java.nio)
-6) Serialize ( write object to hard drive, xml, json, serialize)
-7) Java concurrency
+5) Input/Output (java.io, java.nio) +
+6) Serialize ( write object to hard drive, xml, json, serialize)+
+7) Java concurrency +1/2
 7~) Reflection
 8) Sockets (java.net)
 9) JUnit
