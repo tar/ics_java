@@ -1,5 +1,6 @@
 *.class
 *~
+firstFile.txt
 # Package Files #
 *.jar
 *.war
