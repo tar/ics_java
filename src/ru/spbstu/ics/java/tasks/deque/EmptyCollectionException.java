@@ -12,6 +12,11 @@ import java.util.NoSuchElementException;
 public class EmptyCollectionException extends NoSuchElementException {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7491541041736017649L;
+
+	/**
      * Constructs a <code>EmptyCollectionException</code> with <tt>null</tt> 
      * as its error message string.
      */
