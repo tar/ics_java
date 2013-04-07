@@ -1,3 +1,5 @@
+package ru.spbstu.ics.java.miroshnichenko.task1;
+
 
 import java.util.Arrays;
 import java.util.Deque;
@@ -7,7 +9,7 @@ import java.util.Iterator;
 public class MyDequeTest {
     public static void main(String[] args) {
         System.out.println("Создаем новый дек");
-        Deque<String> dek = new MyDeque<>();
+        Deque<String> dek = new MyDeque<String>();
         System.out.println("Дек пуст? -" +dek.isEmpty());
         System.out.println(dek.size());
         System.out.println("Вставляем 5 элементов");

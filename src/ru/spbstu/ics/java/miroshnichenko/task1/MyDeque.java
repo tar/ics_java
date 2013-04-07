@@ -1,3 +1,5 @@
+package ru.spbstu.ics.java.miroshnichenko.task1;
+
 
 import java.util.Collection;
 import java.util.Deque;
