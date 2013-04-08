@@ -1,4 +1,4 @@
-package ru.spbstu.ics.java.concurrency.firstapp;
+package ru.spbstu.ics.java.concurrency.firstLesson;
 
 public class SecondConcurrentApp {
 

@@ -6,10 +6,10 @@ Java cources plans:
 4) Exception (Error, Runtime exception)+
 5) Input/Output (java.io, java.nio) +
 6) Serialize ( write object to hard drive, xml, json, serialize)+
-7) Java concurrency +1/2
-7~) Reflection
+7) Java concurrency +
+7~) Reflection +
 8) Sockets (java.net)
-9) JUnit
-10) Databases (JDBC)
-11) build tools (ant, maven)
-12) Web
+9) build tools (ant, maven)
+10) Web
+11) JUnit
+12) Databases (JDBC)

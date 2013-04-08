@@ -1,4 +1,4 @@
-package ru.spbstu.ics.java.concurrency.firstapp;
+package ru.spbstu.ics.java.concurrency.firstLesson;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
