@@ -1,0 +1,13 @@
+I. Chat
+	- ServerSocket
+	- Server
+	- ExecutorService
+	
+a) Console
+b) gui - swing
+
+1) simple chat. show message. send message.
+2) show chat members
+3) show leave out/come in notifications
+
+II. CV - Резюме
