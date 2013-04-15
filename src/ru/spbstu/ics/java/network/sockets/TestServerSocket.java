@@ -23,7 +23,7 @@ public class TestServerSocket {
 					public void run() {
 						
 					}
-				})
+				});
 				Scanner scanner = new Scanner(socket.getInputStream());
 				PrintWriter pw = new PrintWriter(socket.getOutputStream());
 				while (scanner.hasNextLine()) {
@@ -33,7 +33,6 @@ public class TestServerSocket {
 					pw.flush();
 				}
 			}
-			socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
