@@ -1,6 +1,10 @@
 *.class
 *~
 firstFile.txt
+webApp/.project
+webApp/.settings/
+webApp/.classpath
+webApp/target
 # Package Files #
 *.jar
 *.war
